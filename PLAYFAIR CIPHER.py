@@ -1,69 +1,80 @@
+import string
+
 def generate_matrix(keyword):
-    # Remove duplicates and create the matrix
-    keyword = "".join(dict.fromkeys(keyword.replace("J", "I")))
-    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
-    matrix = []
+    matrix = [[' ' for _ in range(5)] for _ in range(5)]
+    keyword = keyword.upper()
+    keyword_chars = []
+    seen = set()
     
-    for char in keyword + alphabet:
-        if char not in matrix:
-            matrix.append(char)
+    for char in keyword:
+        if char not in seen:
+            keyword_chars.append(char)
+            seen.add(char)
     
-    # Create 5x5 matrix
-    return [matrix[i:i + 5] for i in range(0, 25, 5)]
+    if len(keyword_chars) > 25:
+        raise ValueError("Keyword no longer than 25 chars")
+    
+    random_chars = [char for char in string.ascii_uppercase if char not in keyword_chars and char != 'J']
+    random_chars.sort()  
 
-def prepare_message(message):
-    # Replace J with I and make pairs
-    message = message.upper().replace("J", "I").replace(" ", "")
-    pairs = []
+    index = 0
+    for i in range(5):
+        for j in range(5):
+            if index < len(keyword_chars):
+                matrix[i][j] = keyword_chars[index]
+                index += 1
+            else:
+                matrix[i][j] = random_chars.pop(0)  
+
+    return matrix
+
+def print_matrix(matrix):
+    for row in matrix:
+        print(' '.join(row))
+
+def prepare_text(text):
+    text = text.upper().replace(' ', '')
+    text = text.replace('J', 'I')
+    result = []
     i = 0
-
-    while i < len(message):
-        a = message[i]
-        b = message[i + 1] if (i + 1) < len(message) else "X"
-        
-        if a == b:
-            pairs.append(a + "X")
-            i += 1
-        else:
-            pairs.append(a + b)
+    while i < len(text):
+        if i + 1 < len(text) and text[i] != text[i + 1]:
+            result.append(text[i:i + 2])
             i += 2
-            
-    if len(pairs[-1]) == 1:
-        pairs[-1] += "X"
-    return pairs
-def find_position(matrix, char):
-    for i, row in enumerate(matrix):
-        if char in row:
-            return i, row.index(char)
-    return None
-def encrypt_decrypt_pair(pair, matrix, encrypt=True):
-    a, b = pair
-    row_a, col_a = find_position(matrix, a)
-    row_b, col_b = find_position(matrix, b)
-    if row_a == row_b:
-        col_a = (col_a + 1) % 5 if encrypt else (col_a - 1) % 5
-        col_b = (col_b + 1) % 5 if encrypt else (col_b - 1) % 5
-    elif col_a == col_b: 
-        row_a = (row_a + 1) % 5 if encrypt else (row_a - 1) % 5
-        row_b = (row_b + 1) % 5 if encrypt else (row_b - 1) % 5
-    else:  
-        col_a, col_b = col_b, col_a
-    return matrix[row_a][col_a] + matrix[row_b][col_b]
-def playfair_cipher(message, keyword, encrypt=True):
-    matrix = generate_matrix(keyword)
-    pairs = prepare_message(message)
-    result = ""
-    for pair in pairs:
-        result += encrypt_decrypt_pair(pair, matrix, encrypt)
+        else:
+            result.append(text[i] + 'X')
+            i += 1
     return result
-keyword = input("Enter keyword: ").upper().replace("J", "I")
-message = input("Enter message: ")
-encrypted_message = playfair_cipher(message, keyword, encrypt=True)
-print("Encrypted Message:", encrypted_message)
-decrypted_message = playfair_cipher(encrypted_message, keyword, encrypt=False)
-print("Decrypted Message:", decrypted_message)
 
+def find_position(matrix, char):
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == char:
+                return (i, j)
 
+def encrypt(matrix, text):
+    result = []
+    for pair in text:
+        pos1 = find_position(matrix, pair[0])
+        pos2 = find_position(matrix, pair[1])
+        if pos1[0] == pos2[0]:  
+            result.append(matrix[pos1[0]][(pos1[1] + 1) % 5] + matrix[pos2[0]][(pos2[1] + 1) % 5])
+        elif pos1[1] == pos2[1]:  
+            result.append(matrix[(pos1[0] + 1) % 5][pos1[1]] + matrix[(pos2[0] + 1) % 5][pos2[1]])
+        else:  
+            result.append(matrix[pos1[0]][pos2[1]] + matrix[pos2[0]][pos1[1]])
+    return ' '.join(result)
 
--------------------------------------------------------------------------------------------------------------------```````````>>>
+def main():
+    text = input("Enter the plain text: ")
+    keyword = input("Enter the keyword: ")
+    matrix = generate_matrix(keyword)
+    print("\nMatrix:")
+    print_matrix(matrix)
+    prepared_text = prepare_text(text)
+    print("\nPrepared text:", ' '.join(prepared_text))
+    encrypted_text = encrypt(matrix, prepared_text)
+    print("\nEncrypted text:", encrypted_text)
 
+if __name__ == "__main__":
+    main()
