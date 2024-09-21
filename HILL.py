@@ -60,7 +60,7 @@ def display_key_matrix_alphabets(key_matrix):
         print(" ".join(row_alphabets))
 
 def get_key_matrix(matrix_size):
-    print(f"Enter the key matrix of size {matrix_size}x{matrix_size}:")
+    print(f"Enter the key matrix of size {matrix_size}x{matrix_size}..!!")
     key_matrix = []
     for i in range(matrix_size):
         row = list(map(int, input(f"Enter row {i+1} values separated by space: ").split()))
@@ -72,7 +72,7 @@ def get_key_matrix(matrix_size):
     return key_matrix
 
 def main():
-    matrix_size = int(input("Enter the size of the key matrix (e.g., 2 for 2x2): "))
+    matrix_size = int(input("Enter the size of the key matrix : "))
     key_matrix = get_key_matrix(matrix_size)
 
     plaintext = input("Enter the plaintext: ").upper().replace(" ", "")
