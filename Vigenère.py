@@ -78,19 +78,23 @@ def vigenere_decrypt(ciphertext, key):
 
 def main():
     choice = input("Do you want to (E)ncrypt or (D)ecrypt? ").upper()
-    if choice not in ['E', 'D']:
-        print("Invalid choice. Please select 'E' or 'D'.")
-        return
-    
     text = input("Enter the text: ")
     key = input("Enter the key: ")
 
     if choice == 'E':
         encrypted = vigenere_encrypt(text, key)
-        print("Encrypted Text:", encrypted)
-    else:
+        print("\nEncrypted Text:", encrypted)
+        # Decrypt the encrypted text to show the reverse operation
+        decrypted = vigenere_decrypt(encrypted, key)
+        print("Decrypted Text (Verification):", decrypted)
+    elif choice == 'D':
         decrypted = vigenere_decrypt(text, key)
-        print("Decrypted Text:", decrypted)
+        print("\nDecrypted Text:", decrypted)
+        # Encrypt the decrypted text to show the reverse operation
+        encrypted = vigenere_encrypt(decrypted, key)
+        print("Encrypted Text (Verification):", encrypted)
+    else:
+        print("Invalid choice. Please select 'E' or 'D'.")
 
 
 if __name__ == "__main__":
