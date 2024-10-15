@@ -1,101 +1,74 @@
-def vigenere_encrypt(plaintext, key):
-    key = key.upper()
-    key_sequence = []
-    ciphertext = []
-    alpha_numeric_plaintext = []
-    alpha_numeric_key = []
-    calculation_steps = []
+def generate_key(message, key):
+    key = list(key)
+    if len(message) == len(key):
+        return key
+    else:
+        for i in range(len(message) - len(key)):
+            key.append(key[i % len(key)])
+    return "".join(key)
 
-    for i, char in enumerate(plaintext):
-        if char.isalpha():
-            shift = ord(key[i % len(key)]) - ord('A')
-            key_sequence.append(key[i % len(key)])
-            alpha_numeric_key.append(str(shift))  # Key's alphabetic numeric value (0-25)
-            if char.isupper():
-                value = ord(char) - ord('A')
-                alpha_numeric_plaintext.append(str(value))  # Plaintext numeric value (0-25)
-                result = (value + shift) % 26 + ord('A')
-                ciphertext.append(chr(result))
-                calculation_steps.append(f"({value} + {shift}) % 26 = {chr(result)}")
-            else:
-                value = ord(char) - ord('a')
-                alpha_numeric_plaintext.append(str(value))
-                result = (value + shift) % 26 + ord('a')
-                ciphertext.append(chr(result))
-                calculation_steps.append(f"({value} + {shift}) % 26 = {chr(result)}")
+def char_to_num(char):
+    return ord(char.upper()) - ord('A')
+
+def num_to_char(num):
+    return chr(num + ord('A'))
+
+def encrypt(message, key):
+    encrypted_message = []
+    print(f"Encrypting '{message}' with key '{key}':")
+    
+    message_nums = [char_to_num(c) for c in message if c.isalpha()]
+    key_nums = [char_to_num(k) for k in key]
+    
+    print(f"Message as numbers: {message_nums}")
+    print(f"Key as numbers: {key_nums}")
+    
+    for i in range(len(message)):
+        if message[i].isalpha():
+            shift = (char_to_num(message[i]) + char_to_num(key[i])) % 26
+            encrypted_char = num_to_char(shift)
+            encrypted_message.append(encrypted_char)
+            print(f"Step {i + 1}: '{message[i]}' + '{key[i]}' -> '{encrypted_char}' (Shift: {shift})")
         else:
-            ciphertext.append(char)
-            key_sequence.append(' ')
-            alpha_numeric_plaintext.append(' ')
-            alpha_numeric_key.append(' ')
+            encrypted_message.append(message[i])
+            print(f"Step {i + 1}: Non-alphabet character '{message[i]}' remains unchanged.")
+    
+    return "".join(encrypted_message)
 
-    print("\n--- Vigenère Encryption Process ---")
-    print("Key Sequence:        ", ''.join(key_sequence))
-    print("Plaintext Alphabetic:", ' '.join(alpha_numeric_plaintext))
-    print("Key Alphabetic:      ", ' '.join(alpha_numeric_key))
-    print("Calculation Steps:   ", ' | '.join(calculation_steps))
-    return ''.join(ciphertext)
-
-
-def vigenere_decrypt(ciphertext, key):
-    key = key.upper()
-    key_sequence = []
-    plaintext = []
-    alpha_numeric_ciphertext = []
-    alpha_numeric_key = []
-    calculation_steps = []
-
-    for i, char in enumerate(ciphertext):
-        if char.isalpha():
-            shift = ord(key[i % len(key)]) - ord('A')
-            key_sequence.append(key[i % len(key)])
-            alpha_numeric_key.append(str(shift))  # Key's alphabetic numeric value (0-25)
-            if char.isupper():
-                value = ord(char) - ord('A')
-                alpha_numeric_ciphertext.append(str(value))  # Ciphertext numeric value (0-25)
-                result = (value - shift) % 26 + ord('A')
-                plaintext.append(chr(result))
-                calculation_steps.append(f"({value} - {shift}) % 26 = {chr(result)}")
-            else:
-                value = ord(char) - ord('a')
-                alpha_numeric_ciphertext.append(str(value))
-                result = (value - shift) % 26 + ord('a')
-                plaintext.append(chr(result))
-                calculation_steps.append(f"({value} - {shift}) % 26 = {chr(result)}")
+def decrypt(encrypted_message, key):
+    decrypted_message = []
+    print(f"\nDecrypting '{encrypted_message}' with key '{key}':")
+    
+    encrypted_nums = [char_to_num(c) for c in encrypted_message if c.isalpha()]
+    key_nums = [char_to_num(k) for k in key]
+    
+    print(f"Encrypted message as numbers: {encrypted_nums}")
+    print(f"Key as numbers: {key_nums}")
+    
+    for i in range(len(encrypted_message)):
+        if encrypted_message[i].isalpha():
+            shift = (char_to_num(encrypted_message[i]) - char_to_num(key[i]) + 26) % 26
+            decrypted_char = num_to_char(shift)
+            decrypted_message.append(decrypted_char)
+            print(f"Step {i + 1}: '{encrypted_message[i]}' - '{key[i]}' -> '{decrypted_char}' (Shift: {shift})")
         else:
-            plaintext.append(char)
-            key_sequence.append(' ')
-            alpha_numeric_ciphertext.append(' ')
-            alpha_numeric_key.append(' ')
-
-    print("\n--- Vigenère Decryption Process ---")
-    print("Key Sequence:          ", ''.join(key_sequence))
-    print("Ciphertext Alphabetic: ", ' '.join(alpha_numeric_ciphertext))
-    print("Key Alphabetic:        ", ' '.join(alpha_numeric_key))
-    print("Calculation Steps:     ", ' | '.join(calculation_steps))
-    return ''.join(plaintext)
-
+            decrypted_message.append(encrypted_message[i])
+            print(f"Step {i + 1}: Non-alphabet character '{encrypted_message[i]}' remains unchanged.")
+    
+    return "".join(decrypted_message)
 
 def main():
-    choice = input("Do you want to (E)ncrypt or (D)ecrypt? ").upper()
-    text = input("Enter the text: ")
+    message = input("Enter the message to encrypt: ")
     key = input("Enter the key: ")
-
-    if choice == 'E':
-        encrypted = vigenere_encrypt(text, key)
-        print("\nEncrypted Text:", encrypted)
-        # Decrypt the encrypted text to show the reverse operation
-        decrypted = vigenere_decrypt(encrypted, key)
-        print("Decrypted Text (Verification):", decrypted)
-    elif choice == 'D':
-        decrypted = vigenere_decrypt(text, key)
-        print("\nDecrypted Text:", decrypted)
-        # Encrypt the decrypted text to show the reverse operation
-        encrypted = vigenere_encrypt(decrypted, key)
-        print("Encrypted Text (Verification):", encrypted)
-    else:
-        print("Invalid choice. Please select 'E' or 'D'.")
-
+    
+    full_key = generate_key(message, key)
+    
+    encrypted_message = encrypt(message, full_key)
+    
+    decrypted_message = decrypt(encrypted_message, full_key)
+    
+    print(f"\nFinal Encrypted Message: {encrypted_message}")
+    print(f"Decrypted Message: {decrypted_message}")
 
 if __name__ == "__main__":
     main()
