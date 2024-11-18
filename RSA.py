@@ -1,7 +1,7 @@
 import math
 from sympy import mod_inverse
-p = int(input("Enter the value of p (prime): "))
-q = int(input("Enter the value of q (prime): "))
+p = int(input("Enter the value of p : "))
+q = int(input("Enter the value of q : "))
 n = p * q
 phi = (p - 1) * (q - 1)
 print("n =", n)
@@ -15,7 +15,7 @@ d = mod_inverse(e, phi)
 print("d =", d)
 print(f'Public key: ({e}, {n})')
 print(f'Private key: ({d}, {n})')
-msg = int(input("Enter the value of the message (as an integer): "))
+msg = int(input("Enter the int value of the message : "))
 print(f'Original message: {msg}')
 C = pow(msg, e, n)
 print(f'Encrypted message: {C}')
