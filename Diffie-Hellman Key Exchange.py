@@ -1,21 +1,23 @@
-import random
+def power(base, exp, mod):
+    if exp == 0:
+        return 1
+    half = power(base, exp // 2, mod)
+    half = (half * half) % mod
+    return half if exp % 2 == 0 else (half * base) % mod
 
-def diffie_hellman(p, g):
-    a = random.randint(1, p-1)  # Alice's private key
-    b = random.randint(1, p-1)  # Bob's private key
+def main():
+    n = int(input("Enter the value of n (modulus): "))
+    g = int(input("Enter the value of g (base): "))
+    x = int(input("Enter the private key for the first person (x): "))
+    a = power(g, x, n)
+    print(f"Public key of the first person: {a}")
+    y = int(input("Enter the private key for the second person (y): "))
+    b = power(g, y, n)
+    print(f"Public key of the second person: {b}")
+    key1 = power(b, x, n)
+    key2 = power(a, y, n)
+    print(f"Shared key for the first person: {key1}")
+    print(f"Shared key for the second person: {key2}")
 
-    A = pow(g, a, p)  # Alice's public key
-    B = pow(g, b, p)  # Bob's public key
-
-    shared_secret_A = pow(B, a, p)  # Alice's shared secret
-    shared_secret_B = pow(A, b, p)  # Bob's shared secret
-
-    assert shared_secret_A == shared_secret_B, "Shared secrets are not equal!"
-    
-    return shared_secret_A
-
-# Example usage
-p = int(input("Enter a prime number (p): "))
-g = int(input("Enter a base (g): "))
-shared_secret = diffie_hellman(p, g)
-print("Shared Secret:", shared_secret)
+if __name__ == "__main__":
+    main()
