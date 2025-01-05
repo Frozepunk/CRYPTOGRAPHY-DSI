@@ -1,29 +1,28 @@
-def caesar_cipher(text, kv, mode='encrypt'):
-    result = []
-    if mode == 'decrypt':
-        kv = -kv
+def caesar_cipher():
+    text = input("Enter text: ")
+    key = int(input("Enter the key value: "))
 
-    for char in text:
-        if char.islower():
-            base = ord('a')
-            res = chr((ord(char) - base + kv) % 26 + base)
-            result.append(res)
-        elif char.isupper():
-            base = ord('A')
-            res = chr((ord(char) - base + kv) % 26 + base)
-            result.append(res)
-        elif char.isdigit():
-            base = ord('0')
-            res = chr((ord(char) - base + kv) % 10 + base)
-            result.append(res)
-        else:
-            result.append(char)
+    def shift(char, key, base, range_size):
+        return chr((ord(char) - base + key) % range_size + base)
 
-    return ''.join(result)
+    # Encryption
+    encrypted = ''.join(
+        shift(char, key, ord('a'), 26) if char.islower() else
+        shift(char, key, ord('A'), 26) if char.isupper() else
+        shift(char, key, ord('0'), 10) if char.isdigit() else
+        char
+        for char in text
+    )
+    print("Encrypted text-->", encrypted)
 
-text = input("Enter text: ")
-kv = int(input("Shift value (kv): "))
-mode = input("Choose mode ('encrypt' or 'decrypt'): ").strip().lower()
+    # Decryption
+    decrypted = ''.join(
+        shift(char, -key, ord('a'), 26) if char.islower() else
+        shift(char, -key, ord('A'), 26) if char.isupper() else
+        shift(char, -key, ord('0'), 10) if char.isdigit() else
+        char
+        for char in encrypted
+    )
+    print("Decrypted text-->", decrypted)
 
-output = caesar_cipher(text, kv, mode)
-print(output)
+caesar_cipher()
