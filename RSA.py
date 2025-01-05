@@ -1,40 +1,18 @@
-import math
-from sympy import mod_inverse
-
-def text_to_numbers(text):
-    return [ord(char) - ord('a') for char in text.lower() if 'a' <= char <= 'z']
-
-def numbers_to_text(numbers):
-    return ''.join(chr(num + ord('a')) for num in numbers)
-
-p = int(input("Enter the value of p (prime number): "))
-q = int(input("Enter the value of q (prime number): "))
-n = p * q
-phi = (p - 1) * (q - 1)
-print("n =", n)
-print("phi(n) =", phi)
-
-e = int(input("Enter the value of e (1 < e < phi(n)): "))
-while e >= phi or math.gcd(e, phi) != 1:
-    print("Invalid e. Ensure 1 < e < phi(n) and gcd(e, phi) = 1.")
-    e = int(input("Enter a valid value for e: "))
-print("e =", e)
-
-d = mod_inverse(e, phi)
-print("d =", d)
-
-print(f'Public key: ({e}, {n})')
-print(f'Private key: ({d}, {n})')
-
-text = input("Enter a text to encrypt (only alphabets): ")
-numbers = text_to_numbers(text)
-print("Numerical representation of text:", numbers)
-
-encrypted_numbers = [pow(num, e, n) for num in numbers]
-print("Encrypted numerical values:", encrypted_numbers)
-
-decrypted_numbers = [pow(num, d, n) for num in encrypted_numbers]
-print("Decrypted numerical values:", decrypted_numbers)
-
-decrypted_text = numbers_to_text(decrypted_numbers)
-print("Decrypted text:", decrypted_text)
+import math 
+p=int(input("Enter the value of P:->"))
+q=int(input("Enter the value of Q:->"))
+n=p*q
+phi_n=((p-1)*(q-1))
+e=int(input("Enter the value of E:"))
+while e<phi_n:
+    if math.gcd(e,phi_n)==1:
+        break
+    e+=1
+d=pow(e,-1,phi_n)
+print(f"Public key ({e,n})")
+print(f"Private key({d,n})")
+m=int(input("Enter the value of M:"))
+c=math.pow(m,e)%n
+de=math.pow(c,d)%n
+print(f"Encrypt{c}")
+print(f"Decrypt {de}")
